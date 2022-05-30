@@ -4,7 +4,7 @@
 # Detailed steps
 
 ## Mandatory includes :
-> #include <unistd.h>
+> #include <unistd.h>\n
 > #include <sys/wait.h>
 > #include <string.h>
 
