@@ -20,7 +20,10 @@
 > while (av[i] && strcmp(av[i], ";") && strcmp(av[i], "|"))
 
 ## Check if it's cd
+> if (!strcmp(av[0], "cd"))
 
 ## Check if it's there is a ';' or if there's no more command after
+> else if (i && (av[i] == NULL || !strcmp(av[i], ";")))
 
 ## Check if it's there is a '|'
+> else if (i && !strcmp(av[i], "|"))
