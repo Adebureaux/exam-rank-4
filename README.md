@@ -6,7 +6,7 @@
 ## Mandatory includes :
 > #include <unistd.h> \
 > #include <sys/wait.h> \
-> #include <string.h> \
+> #include <string.h>
 
 ## Functions to create
 ### A fonction that 
