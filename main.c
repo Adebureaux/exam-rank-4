@@ -4,13 +4,14 @@
 #include <string.h>
 #include <sys/wait.h>
 
-void ft_putstr(char *str, char *arg)
+int ft_putstr(char *str, char *arg)
 {
 	while (*str)
 		write(2, str++, 1);
 	while (arg && *arg)
 		write(2, arg++, 1);
 	write(2, "\n", 1);
+	return (1);
 }
 
 int ft_exec(char **av, int end, int tmp, char **env)
@@ -19,16 +20,14 @@ int ft_exec(char **av, int end, int tmp, char **env)
 	dup2(tmp, STDIN_FILENO);
 	close(tmp);
 	execve(av[0], av, env);
-	return (1);
+	return (ft_putstr("error: cannot execute ", av[0]));
 }
 
 int	main(int ac, char **av, char **env)
 {
 	(void)ac;
 	int i = 0;
-	int pid = 0;
 	int tmp = dup(STDIN_FILENO);
-	int fd[2];
 
 	while (av[i] && av[i + 1])
 	{
@@ -36,16 +35,16 @@ int	main(int ac, char **av, char **env)
 		i = 0;
 		while (av[i] && strcmp(av[i], ";") && strcmp(av[i], "|"))
 			i++;
-		if (strcmp(av[0], "cd") == 0)
+		if (!strcmp(av[0], "cd"))
 		{
 			if (i != 2)
 				ft_putstr("error: cd: bad arguments", NULL);
 			else if (chdir(av[1]))
 				ft_putstr("error: cd: cannot change directory to ", av[1]);
 		}
-		else if (i != 0 && (av[i] == NULL || strcmp(av[i], ";") == 0))
+		else if (i != 0 && (av[i] == NULL || !strcmp(av[i], ";")))
 		{
-			pid = fork();
+			int pid = fork();
 			if (pid == 0)
 			{
 				if (ft_exec(av, i, tmp, env))
@@ -54,15 +53,15 @@ int	main(int ac, char **av, char **env)
 			else
 			{
 				close(tmp);
-				while(waitpid(-1, NULL, WUNTRACED) != -1)
-					;
+				waitpid(-1, NULL, WUNTRACED);
 				tmp = dup(STDIN_FILENO);
 			}
 		}
 		else if(i && !strcmp(av[i], "|"))
 		{
+			int fd[2];
 			pipe(fd);
-			pid = fork();
+			int pid = fork();
 			if (!pid)
 			{
 				dup2(fd[1], STDOUT_FILENO);
